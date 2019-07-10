@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <title>Home</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="key.png" rel="shortcut icon" type="image/x-icon" />
+    
+</head>
+<body>
+    <div id="search-google" class="search">
+        <h2>Search Google</h2>
+        <p>
+            type your query and hit enter
+            <br />
+            results open in a new tab
+        </p>
+        <input id="search-field-google" type="text" class="search-field" name="search-field" onkeypress="return searchGoogle(event)"/>
+    </div>
+    <div id="search-sfcc" class="search">
+        <h2>Search SFCC Documentation</h2>
+        <p>
+            type your query and hit enter
+            <br />
+            results open in a new tab
+        </p>
+        <input id="search-field-sfcc" type="text" class="search-field" name="search-field" onkeypress="return searchSFCC(event)"/>
+    </div>
+    <div class="container">
+        <div id="clock"></div>
+        <div class="weather-container">
+            <div class="row">
+                <div id="weather-description" class="inline"></div>
+                <div class="inline">-</div>
+                <div id="temp" class="inline"></div>
+            </div>
+        </div>
+        <div class="bookmark-container">
+            <div class="bookmark-set">
+                <div class="bookmark-title">Daily</div>
+                <div class="bookmark-inner-container">
+                    <a class="bookmark" href="https://inbox.google.com/" target="_blank">Email</a>
+                    <a class="bookmark" href="https://calendar.google.com/calendar/r/week" target="_blank">Calendar</a>
+                    <a class="bookmark" href="https://github.com/FitnessKeeper/asics-sfcc" target="_blank">SFCC Repo (GitHub)</a>
+                    <a class="bookmark" href="https://runkeeper.atlassian.net/secure/Dashboard.jspa" target="_blank">Jira</a>
+                    <a class="bookmark" href="https://docs.google.com/spreadsheets/d/1nK9NPg5OaXWld84fFcEphpRh-i_iDjSwI2yYNJ11CfY/edit?ts=5cdee48c#gid=1826644118" target="_blank">Remaining ANA Tasks</a>
+                </div>
+            </div>
+            <div class="bookmark-set">
+                <div class="bookmark-title">Resources</div>
+                <div class="bookmark-inner-container">
+                    <a class="bookmark" href="https://runkeeper.atlassian.net/wiki/spaces/ADR/overview" target="_blank">Confluence</a>
+                    <a class="bookmark" href="https://documentation.b2c.commercecloud.salesforce.com/DOC1/index.jsp" target="_blank">SFCC API</a>
+                    <a class="bookmark" href="https://xchange.demandware.com/welcome" target="_blank">XChange</a>
+                    <a class="bookmark" href="https://docs.adyen.com/developers/development-resources/test-cards/test-card-numbers" target="_blank">Adyen Test Cards</a>
+                    <a class="bookmark" href="https://asicsdigital.namely.com/" target="_blank">Namely</a>
+                </div>
+            </div>
+            <div class="bookmark-set">
+            <div class="bookmark-title">SFCC</div>
+                <div class="bookmark-inner-container">
+                    <a class="bookmark" href="https://account.demandware.com/dw/account/Home#/" target="_blank">Account Manager</a>
+                    <a class="bookmark" href="https://controlcenter.commercecloud.salesforce.com/index.html#/?empty" target="_blank">Control Center</a>
+                    <a class="bookmark" href="https://sfcc-powertools.dev.asics.digital/" target="_blank">Powertools</a>
+                    <a class="bookmark" href="https://dev25-web-asics.demandware.net/on/demandware.store/Sites-Site/default/ViewApplication-Login" target="_blank">Sandbox</a>
+                    <a class="bookmark" href="https://development-web-asics.demandware.net/on/demandware.store/Sites-Site/default/ViewApplication-Login" target="_blank">Development</a>
+                    <a class="bookmark" href="https://staging-web-asics.demandware.net/on/demandware.store/Sites-Site/default/ViewApplication-Login" target="_blank">Staging</a>
+                    <a class="bookmark" href="https://production-web-asics.demandware.net/on/demandware.store/Sites-Site/default/ViewApplication-Login" target="_blank">Production</a>
+                </div>
+            </div>
+        </div>
+        <div class="hints">
+            <p>
+                hit 'g' to start a Google Search or hit 's' to search SFCC Documentation
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let searchDivs = document.getElementsByClassName("search");
+        let isSearchOpen = false;
+
+        // Google search on enter key event
+        function searchGoogle(e) {
+            if (e.keyCode == 13) {
+                var val = document.getElementById("search-field-google").value;
+                window.open("https://google.com/search?q=" + val);
+            }
+        }
+        // SFCC Doc search on S key event
+        function searchSFCC(e) {
+            if (e.keyCode == 13) {
+                var val = document.getElementById("search-field-sfcc").value;
+                window.open("https://documentation.b2c.commercecloud.salesforce.com/DOC2/advanced/searchView.jsp?searchWord=" + val + "&maxHits=500");
+            }
+        }
+
+        // Get current time and format
+        function getTime() {
+            let date = new Date(),
+                min = date.getMinutes(),
+                hour = date.getHours();
+
+            return "" + 
+                (hour < 10 ? ("0" + hour) : hour) + ":" + 
+                (min < 10 ? ("0" + min) : min);
+        }
+
+        function checkForOpenSearch() {
+            for (i = 0; i < searchDivs.length; i++) {
+                if (searchDivs[i].classList.contains('opened')) {
+                    isSearchOpen = true;
+                }
+            } 
+        }
+
+        window.onload = () => {
+            let xhr = new XMLHttpRequest();
+            // Request to open weather map
+            xhr.open('GET', 'http://api.openweathermap.org/data/2.5/weather?id=4930956&units=imperial&appid=e5b292ae2f9dae5f29e11499c2d82ece');
+            xhr.onload = () => {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        let json = JSON.parse(xhr.responseText);
+                        document.getElementById("temp").innerHTML = json.main.temp.toFixed(0) + " F";
+                        document.getElementById("weather-description").innerHTML = json.weather[0].description;
+                    } else {
+                        console.log('error msg: ' + xhr.status);
+                    }
+                }
+            }
+            xhr.send();
+            // Set up the clock
+            document.getElementById("clock").innerHTML = getTime();
+            // Set clock interval to tick clock
+            setInterval( () => {
+                document.getElementById("clock").innerHTML = getTime();
+            },100);
+        }
+
+        document.addEventListener("keydown", event => {
+            checkForOpenSearch();
+            // g key opens Google search
+            if (event.keyCode == 71 && isSearchOpen === false) {
+                setTimeout(function(){ 
+                    document.getElementById('search-google').classList.add('opened');
+                    document.getElementById('search-field-google').focus();
+                }, 100);
+            } 
+            // s key opens SFCC Documentation search
+            else if (event.keyCode == 83 && isSearchOpen === false) {
+                setTimeout(function(){ 
+                    document.getElementById('search-sfcc').classList.add('opened');
+                    document.getElementById('search-field-sfcc').focus();
+                }, 100);
+            }
+            // Esc closes search
+            else if (event.keyCode == 27) {
+                isSearchOpen = false;
+                for (i = 0; i < searchDivs.length; i++) {
+                    searchDivs[i].classList.remove('opened');
+                    searchDivs[i].getElementsByClassName('search-field')[0].value = '';
+                    searchDivs[i].getElementsByClassName('search-field')[0].blur();
+                } 
+            }
+        }); 
+  
+    </script>
+</body>
+</html>
